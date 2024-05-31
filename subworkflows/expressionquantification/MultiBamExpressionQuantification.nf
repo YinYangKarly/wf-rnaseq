@@ -43,13 +43,9 @@ workflow MultiBamExpressionQuantificationwf {
     If detectNoveltranscripts is false but lncRNAdetection is true, it will run Gff_Compare, but in this case the stringite output will be annotated
     on the referenceGtfFile. If neither is true, it will use the referenceGtf as the gtf file.
     */
-    if (detectNovelTranscripts) {
-        gtf = Gff_Compare.out.combined_gtf.map {it[1]}.collect()
-        gtf_with_meta = Gff_Compare.out.combined_gtf.collect()
-        }
-    else if (params.lncRNAdetection) {
-        gtf = Gff_Compare.out.annotated_gtf.map {it[1]}.collect()
-        gtf_with_meta = Gff_Compare.out.annotated_gtf.collect()
+    if (detectNovelTranscripts || params.lncRNAdetection) {
+        gtf = Gff_Compare.out.annotated_gtf.map {it[1]}.collect().concat(Gff_Compare.out.combined_gtf.map {it[1]}.collect())
+        gtf_with_meta = Gff_Compare.out.annotated_gtf.collect().concat(Gff_Compare.out.combined_gtf.collect())
         }
     else {
         gtf = referenceGtfFile[1]
@@ -102,7 +98,7 @@ workflow MultiBamExpressionQuantificationwf {
 
     //emitting the output of the workflow
     emit:
-    gtf = gtf
+    gtf = gtf_with_meta
     report = reports
 
 }
