@@ -1,6 +1,5 @@
 // Include modules and RNA-Bloom2  workflow
 include { MINIMAP2_ALIGN as MINIMAP2_ALIGN_RNABLOOM2 }          from './modules/minimap2.nf'
-include { SAMTOOLS_SORT_RNA as SAMTOOLS_SORT_FOR_RNABLOOM2 }    from './modules/samtools.nf'
 include { GFFREAD_RNA as GFFREAD_RNABLOOM2}                     from './modules/gffread.nf'
 include { BAM2GFF as BAM2GFF_RNABLOOM2 }                        from './modules/bam2gff.nf'
 
@@ -13,14 +12,12 @@ workflow FATOGTF {
     // Main part to connect the modules
     main:
         MINIMAP2_ALIGN_RNABLOOM2(rnabloomtrans, referenceFa,"bam")
-        //SAMTOOLS_SORT_FOR_RNABLOOM2(MINIMAP2_ALIGN_RNABLOOM2.out.sam, referenceFa)
         BAM2GFF_RNABLOOM2(MINIMAP2_ALIGN_RNABLOOM2.out.bam)
         GFFREAD_RNABLOOM2(BAM2GFF_RNABLOOM2.out.gff)
     
     // What is emitted to the next workflow
     emit:
         minimap2_bam = MINIMAP2_ALIGN_RNABLOOM2.out.bam
-        //samtools_sorted = SAMTOOLS_SORT_FOR_RNABLOOM2.out.bam
         out_gff = BAM2GFF_RNABLOOM2.out.gff
         out_gtf = GFFREAD_RNABLOOM2.out.gtf
 }
