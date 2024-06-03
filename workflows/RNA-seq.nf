@@ -23,10 +23,9 @@ include {GFFREAD as GffRead}                        from "../modules/nf-core/gff
 include {CPAT as Cpat}                              from "../modules/local/cpat/main.nf"
 include {GFFCOMPARE as Gff_Compare_lnc}             from "../modules/nf-core/gffcompare/main.nf"
 
-
-// This part includes fusion detection workflows
-include {ARRIBA_WORKFLOW as Arribawf}               from "../subworkflows/arriba_fusion/arriba_workflow.nf" 
-include {LONG_GF as LongGFwf}                       from "../subworkflows/longgf_fusion/LongGF_workflow.nf"
+// This part include RNABloom2 assembly and Fasta to Gtf file coversion.
+include {RNABLOOM2 as Rnabloom2wf}                  from "../subworkflows/RNAbloom_assembly/RNA_Bloom2_workflow.nf"
+include {FATOGTF as Fatogtfwf}                      from "../subworkflows/RNAbloom_assembly/Fa_to_gtf.nf"   
 
 //END INCLUDE STATEMENTS---------------------------------------------------------------------------------------------------------------
 
@@ -47,13 +46,8 @@ workflow RNA_seq {
         referenceFastaDict                  = [[id: "Genome"], file(params.genomes[ params.genome ][ 'fastaDict' ], checkIfExists: true)]
         refflatFile                         = file(params.genomes[ params.genome ] [ 'refflat']).exists() ? [[id: "Genome"], file(params.genomes[ params.genome ][ 'refflat' ])] : [[id: "Genome"],[]]
         referenceGtfFile                    = file(params.genomes[ params.genome ][ 'referenceGTF' ]).exists() ? [[id: "Genome"], file(params.genomes[ params.genome ][ 'referenceGTF' ])] : [[id: "Genome"], []]
-        transcriptFasta                     = file(params.genomes[ params.genome ][ 'fastaTranscript' ]).exists() ? [[id: "Genome"], file(params.genomes[ params.genome ][ 'fastaTranscript' ])] : [[id: "Genome"], []]
+		transcriptFasta                     = file(params.genomes[ params.genome ][ 'fastaTranscript' ]).exists() ? [[id: "Genome"], file(params.genomes[ params.genome ][ 'fastaTranscript' ])] : [[id: "Genome"], []]
 
-        //define input needed for Arriba fusion
-        blakclist                           = [[id: "Genome"], file(params.genomes[ params.genome ][ 'arriba_ref_blacklist' ], checkIfExists: true)]
-        cytobands                           = [[id: "Genome"], file(params.genomes[ params.genome ][ 'arriba_ref_cytobands' ], checkIfExists: true)]
-        knownFus                            = [[id: "Genome"], file(params.genomes[ params.genome ][ 'arriba_ref_known_fusions' ], checkIfExists: true)]
-        protdom                             = [[id: "Genome"], file(params.genomes[ params.genome ][ 'arriba_ref_protein_domains' ], checkIfExists: true)]
 
         //defines regions. Optional files that are only used in the variantcalling part of the workflow.
         variantCallingRegions               = file("$baseDir/$params.variantCallingRegions").exists() ? [[id: "Region"], file(params.variantCallingRegions)] : []
@@ -102,16 +96,11 @@ workflow RNA_seq {
         //Calls the expression quantification subworkflow. It will generate count tables that show the gene expression.
         MultiBamExpressionQuantificationwf(bam = Samplewf.out.bam, referenceGtfFile, referenceFasta, referenceFastaFai)
         
-        //Fusion detection with Arriba, if that is true it will run
-        if (params.arriba) { 
-            Arribawf(Samplewf.out.reads, referenceGtfFile, referenceFasta, Samplewf.out.star_index, blakclist, knownFus, protdom)
+        //RNA-Bloom2 assembly, if that is true it will run
+        if (params.runRNABLoom2) {
+            Rnabloom2wf(Samplewf.out.reads, transcriptFasta, referenceFasta)
+            Fatogtfwf(Rnabloom2wf.out.fastaRNABloom, referenceFasta)
         }
-
-        //Fusion detection with LongGF, if that is true and there is a bam file, it will run
-        if (params.longgf) {
-           LongGFwf(Samplewf.out.bam, referenceGtfFile, referenceFasta)
-        }
-
 
         //Checks if lncRNAdetection is true, if it is true it will run GffRead, Cpat and Gff_Compare. Requires cpatHex and cpatLogitModel in order to work properly.
         if (params.lncRNAdetection) {
@@ -124,9 +113,6 @@ workflow RNA_seq {
         
         //Reports are being merged together.
         reports = Samplewf.out.reports.join(MultiBamExpressionQuantificationwf.out.report)
-
-        Arribawf.out.fusions
-        Arribawf.out.fusions_fail
 
         //Report identification label is being removed since it can't be used in MultiQC.
         reports.map{return it.subList(1, it.size()).flatten()}.set{reports}
