@@ -7,7 +7,7 @@ process BAM2GFF {
         tuple val(meta), path(bam)
 
     output:
-        tuple val(meta), path("${meta.id}.gff"), emit: gff
+        path("${meta.id}.gff"), emit: gff
     
     script:
     def args  = task.ext.args ?: ''
