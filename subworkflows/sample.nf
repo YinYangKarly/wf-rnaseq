@@ -156,6 +156,5 @@ workflow Samplewf{
         reports = reports
         reads = QCwf.out.reads
         star_index = Star_Genomegenerate.out.index
-
 }
 
