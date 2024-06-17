@@ -13,7 +13,7 @@ workflow FATOGTF {
     main:
         MINIMAP2_ALIGN_RNABLOOM2(rnabloomtrans, referenceFa, true, false, false)
         BAM2GFF_RNABLOOM2(MINIMAP2_ALIGN_RNABLOOM2.out.bam)
-        GFFREAD_RNABLOOM2(BAM2GFF_RNABLOOM2.out.gff)
+        GFFREAD_RNABLOOM2(BAM2GFF_RNABLOOM2.out.gff.map {it[1]})
     
     // What is emitted to the next workflow
     emit:
