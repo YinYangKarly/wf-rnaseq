@@ -30,6 +30,8 @@ include {LONG_GF as LongGFwf}                       from "../subworkflows/longgf
 // This part include RNABloom2 assembly and Fasta to Gtf file coversion.
 include {RNABLOOM2 as Rnabloom2wf}                  from "../subworkflows/RNAbloom_assembly/RNA_Bloom2_workflow.nf"
 include {FATOGTF as Fatogtfwf}                      from "../subworkflows/RNAbloom_assembly/Fa_to_gtf.nf"   
+include { MERGEDTRANSCRIPT as Mergingfiles }         from "../subworkflows/RNAbloom_assembly/modules/MergedTranscriptFiles.nf"
+include { GFFCOMPARE as Gff_Compare_comp}           from "../modules/nf-core/gffcompare/main.nf"
 
 //END INCLUDE STATEMENTS---------------------------------------------------------------------------------------------------------------
 
@@ -108,9 +110,28 @@ workflow RNA_seq {
         //RNA-Bloom2 assembly, if that is true it will run
         if (params.runRNABLoom2) {
             Rnabloom2wf(Samplewf.out.reads, transcriptFasta, referenceFasta)
-            Fatogtfwf(Rnabloom2wf.out.fastaRNABloom, referenceFasta)
+            Fatogtfwf(Rnabloom2wf.out.fastaRNABloom, referenceFasta, referenceFastaFai, referenceGtfFile)
         }
    
+        //Compare novel transcripts RNA-Bloom2 and Stringtie
+        if (params.novelTransComp) {
+           
+            MultiBamExpressionQuantificationwf.out.gtf.map { instance ->
+                identification = "comp"
+                gtfs = instance[1]
+                return [identification, gtfs]}.groupTuple()
+            .map{return [[id:it[0]], it[1].flatten()]}.set{GtfFile1}
+        
+            Fatogtfwf.out.out_gtf_def.map { instance ->
+                identification = "comp"
+                gtfs = instance[1]
+                return [identification, gtfs]}.groupTuple()
+            .map{return [[id:it[0]], it[1].flatten()]}.set{GtfFile2}
+        
+            GtfFile1.join(GtfFile2)
+            Gff_Compare_comp(GtfFile1, referenceFasta << referenceFastaFai[1], referenceGtfFile)
+        }
+
         //Fusion detection with Arriba, if that is true it will run  
         if (params.arriba) { 
             Arribawf(Samplewf.out.reads, referenceGtfFile, referenceFasta, Samplewf.out.bam, blakclist, knownFus, protdom)
