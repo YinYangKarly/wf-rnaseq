@@ -30,8 +30,10 @@ include {LONG_GF as LongGFwf}                       from "../subworkflows/longgf
 // This part include RNABloom2 assembly and Fasta to Gtf file coversion.
 include {RNABLOOM2 as Rnabloom2wf}                  from "../subworkflows/RNAbloom_assembly/RNA_Bloom2_workflow.nf"
 include {FATOGTF as Fatogtfwf}                      from "../subworkflows/RNAbloom_assembly/Fa_to_gtf.nf"   
-include { MERGEDTRANSCRIPT as Mergingfiles }         from "../subworkflows/RNAbloom_assembly/modules/MergedTranscriptFiles.nf"
 include { GFFCOMPARE as Gff_Compare_comp}           from "../modules/nf-core/gffcompare/main.nf"
+include {FATOFQ as Fatofqwf}                        from "../subworkflows/RNAbloom_assembly/Fa_to_fq.nf"   
+include { RNA_FUSIONS_JAFFAL as Jaffal }            from "../subworkflows/rna_fusions_jaffal.nf"
+
 
 //END INCLUDE STATEMENTS---------------------------------------------------------------------------------------------------------------
 
@@ -111,6 +113,8 @@ workflow RNA_seq {
         if (params.runRNABLoom2) {
             Rnabloom2wf(Samplewf.out.reads, transcriptFasta, referenceFasta)
             Fatogtfwf(Rnabloom2wf.out.fastaRNABloom, referenceFasta, referenceFastaFai, referenceGtfFile)
+            Fatofqwf(Fatogtfwf.out.fasta_changed_header)
+            Jaffal(Fatofqwf.out.fastq, params.jaffal_ref_dir)
         }
    
         //Compare novel transcripts RNA-Bloom2 and Stringtie
