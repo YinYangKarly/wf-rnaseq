@@ -10,9 +10,10 @@ process REMOVE_PART_HEADER {
 
     output:
     tuple val(meta), path("${meta.id}_withoutlengtcov.fa"), emit: fasta2
-
+//| tr ">" "@" 
     script:
     """
-    cat ${fasta} | awk -F ' ' '{print \$1}' > ${meta.id}_transcripts_withoutlengtcov.fa
+    #!/bin/bash
+    cat ${fasta} | awk -F ' ' '{print \$1}' > ${meta.id}_withoutlengtcov.fa 
     """
 }
