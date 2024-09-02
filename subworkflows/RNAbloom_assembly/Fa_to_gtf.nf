@@ -3,6 +3,7 @@ include { MINIMAP2_ALIGN as MINIMAP2_ALIGN_RNABLOOM2 }          from '../../modu
 include { GFFREAD as GFFREAD_RNABLOOM2}                         from '../../modules/nf-core/gffread/main.nf'
 include { BAM2GFF as BAM2GFF_RNABLOOM2 }                        from './modules/bam2gff.nf'
 include { GFFCOMPARE as GFFCOMPARE_RNABLOOM2}                   from "../../modules/nf-core/gffcompare/main.nf"
+include { REMOVE_PART_HEADER as REMOVE_PART_HEADER_RNABLOOM2 }  from './modules/Remove_header.nf'
 
 workflow FATOGTF {
     // Definition of the input
@@ -14,6 +15,7 @@ workflow FATOGTF {
         
     // Main part to connect the modules
     main:
+        REMOVE_PART_HEADER_RNABLOOM2(rnabloomtrans)
         MINIMAP2_ALIGN_RNABLOOM2(rnabloomtrans, referenceFa, true, false, false)
         BAM2GFF_RNABLOOM2(MINIMAP2_ALIGN_RNABLOOM2.out.bam)
         GFFREAD_RNABLOOM2(BAM2GFF_RNABLOOM2.out.gff.map {it[1]})
@@ -26,6 +28,7 @@ workflow FATOGTF {
 
     // What is emitted to the next workflow
     emit:
+        fasta_changed_header = REMOVE_PART_HEADER_RNABLOOM2.out.fasta2
         minimap2_bam = MINIMAP2_ALIGN_RNABLOOM2.out.bam
         out_gff = BAM2GFF_RNABLOOM2.out.gff
         out_gtf = GFFREAD_RNABLOOM2.out.gtf
