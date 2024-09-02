@@ -30,10 +30,11 @@ include {LONG_GF as LongGFwf}                       from "../subworkflows/longgf
 // This part include RNABloom2 assembly and Fasta to Gtf file coversion.
 include {RNABLOOM2 as Rnabloom2wf}                  from "../subworkflows/RNAbloom_assembly/RNA_Bloom2_workflow.nf"
 include {FATOGTF as Fatogtfwf}                      from "../subworkflows/RNAbloom_assembly/Fa_to_gtf.nf"   
-include { GFFCOMPARE as Gff_Compare_comp}           from "../modules/nf-core/gffcompare/main.nf"
+include { GFFCOMPARE as GFFCOMPARECOMP}             from "../modules/nf-core/gffcompare/main.nf"
 include {FATOFQ as Fatofqwf}                        from "../subworkflows/RNAbloom_assembly/Fa_to_fq.nf"   
 include { RNA_FUSIONS_JAFFAL as Jaffal }            from "../subworkflows/rna_fusions_jaffal.nf"
-
+include {STARLONG_ARRIBA as Starlong_arribawf }     from "../subworkflows/RNAbloom_assembly/STARlong_arriba.nf"
+include { CTAT_LR_FUSION as Ctat_lr_fusion }        from "../subworkflows/CTAT_LR_fusion/ctat_lr_fusion.nf"
 
 //END INCLUDE STATEMENTS---------------------------------------------------------------------------------------------------------------
 
@@ -114,7 +115,9 @@ workflow RNA_seq {
             Rnabloom2wf(Samplewf.out.reads, transcriptFasta, referenceFasta)
             Fatogtfwf(Rnabloom2wf.out.fastaRNABloom, referenceFasta, referenceFastaFai, referenceGtfFile)
             Fatofqwf(Fatogtfwf.out.fasta_changed_header)
-            Jaffal(Fatofqwf.out.fastq, params.jaffal_ref_dir)
+            Ctat_lr_fusion(Fatofqwf.out.fastq)
+           // Jaffal(Fatofqwf.out.fastq, params.jaffal_ref_dir)
+           // Starlong_arribawf(Fatofqwf.out.fastq, Samplewf.out.star_index, referenceGtfFile, referenceFasta, blakclist, knownFus, protdom)
         }
    
         //Compare novel transcripts RNA-Bloom2 and Stringtie
@@ -133,7 +136,7 @@ workflow RNA_seq {
             .map{return [[id:it[0]], it[1].flatten()]}.set{GtfFile2}
         
             GtfFile1.join(GtfFile2)
-            Gff_Compare_comp(GtfFile1, referenceFasta << referenceFastaFai[1], referenceGtfFile)
+            GFFCOMPARECOMP(GtfFile1, referenceFasta << referenceFastaFai[1], referenceGtfFile)
         }
 
         //Fusion detection with Arriba, if that is true it will run  
