@@ -116,27 +116,7 @@ workflow RNA_seq {
             Fatogtfwf(Rnabloom2wf.out.fastaRNABloom, referenceFasta, referenceFastaFai, referenceGtfFile)
             Fatofqwf(Fatogtfwf.out.fasta_changed_header)
             Ctat_lr_fusion(Fatofqwf.out.fastq)
-           // Jaffal(Fatofqwf.out.fastq, params.jaffal_ref_dir)
-           // Starlong_arribawf(Fatofqwf.out.fastq, Samplewf.out.star_index, referenceGtfFile, referenceFasta, blakclist, knownFus, protdom)
-        }
-   
-        //Compare novel transcripts RNA-Bloom2 and Stringtie
-        if (params.novelTransComp) {
-           
-            MultiBamExpressionQuantificationwf.out.gtf.map { instance ->
-                identification = "comp"
-                gtfs = instance[1]
-                return [identification, gtfs]}.groupTuple()
-            .map{return [[id:it[0]], it[1].flatten()]}.set{GtfFile1}
-        
-            Fatogtfwf.out.out_gtf_def.map { instance ->
-                identification = "comp"
-                gtfs = instance[1]
-                return [identification, gtfs]}.groupTuple()
-            .map{return [[id:it[0]], it[1].flatten()]}.set{GtfFile2}
-        
-            GtfFile1.join(GtfFile2)
-            GFFCOMPARECOMP(GtfFile1, referenceFasta << referenceFastaFai[1], referenceGtfFile)
+            Starlong_arribawf(Fatofqwf.out.fastq, Samplewf.out.star_index, referenceGtfFile, referenceFasta, blakclist, knownFus, protdom)
         }
 
         //Fusion detection with Arriba, if that is true it will run  
