@@ -14,7 +14,7 @@ process CTAT_LR_FUSION {
 
     script:
     """
-    singularity exec -e  -B ${workflow.workDir} -B ${params.genome_lib} ${params.sing_ctat} \\ctat-LR-fusion -T ${longread} --genome_lib_dir ${params.genome_lib} 
+    singularity exec -e  -B ${workflow.workDir} -B ${params.genome_lib} ${params.sing_ctat} \\ctat-LR-fusion -T ${longread} --genome_lib_dir ${params.genome_lib} --vis
     """
 
 }
