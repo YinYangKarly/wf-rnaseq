@@ -4,6 +4,7 @@
 include {FILE_CHECK as File_Check}                  from "../lib/main.nf"
 
 //This part includes all the subworkflows of the mandatory part of the workflow.
+include {QCwf}                                      from "../subworkflows/QC.nf"
 include { Samplewf }                                from "../subworkflows/sample.nf"
 include { MultiBamExpressionQuantificationwf }      from "../subworkflows/expressionquantification/MultiBamExpressionQuantification.nf"
 
@@ -78,9 +79,13 @@ workflow RNA_seq {
 
         //END DEFINITION INPUT FILES --------------------------------------------------------------------------------------------------
 
-        //runs the sampleworkflow.
-        Samplewf(fastq_grouped_list, referenceFasta, referenceFastaFai, referenceFastaDict, referenceGtfFile , refflatFile)
+        QCwf(fastq_grouped_list)
 
+        //runs the sampleworkflow if params.star is true.
+        if(params.star) {
+            Samplewf(fastq_grouped_list, referenceFasta, referenceFastaFai, referenceFastaDict, referenceGtfFile , refflatFile)
+        }
+        
 
         //START OF VARIANTCALLING -----------------------------------------------------------------------------------------------------
         if(params.variantCalling) /*true false statement*/ { 
@@ -107,16 +112,19 @@ workflow RNA_seq {
         //END OF VARIANTCALLING -------------------------------------------------------------------------------------------------------
         
 
-        //Calls the expression quantification subworkflow. It will generate count tables that show the gene expression.
-        MultiBamExpressionQuantificationwf(bam = Samplewf.out.bam, referenceGtfFile, referenceFasta, referenceFastaFai)
+        //Calls the expression quantification subworkflow. It will generate count tables that show the gene expression if params.stringtie is true.
+        if(params.stringtie) {
+            MultiBamExpressionQuantificationwf(bam = Samplewf.out.bam, referenceGtfFile, referenceFasta, referenceFastaFai)
+
+        }
         
         //RNA-Bloom2 assembly, if that is true it will run
         if (params.runRNABLoom2) {
-            Rnabloom2wf(Samplewf.out.reads, transcriptFasta, referenceFasta)
+            Rnabloom2wf(QCwf.out.reads, transcriptFasta, referenceFasta)
             Fatogtfwf(Rnabloom2wf.out.fastaRNABloom, referenceFasta, referenceFastaFai, referenceGtfFile)
             Fatofqwf(Fatogtfwf.out.fasta_changed_header)
             Ctat_lr_fusion(Fatofqwf.out.fastq)
-            Starlong_arribawf(Fatofqwf.out.fastq, Samplewf.out.star_index, referenceGtfFile, referenceFasta, blakclist, knownFus, protdom)
+            Starlong_arribawf(Fatofqwf.out.fastq, referenceGtfFile, referenceFasta, blakclist, knownFus, protdom)
         }
 
         //Fusion detection with Arriba, if that is true it will run  
@@ -131,23 +139,24 @@ workflow RNA_seq {
 
         //Checks if lncRNAdetection is true, if it is true it will run GffRead, Cpat and Gff_Compare. Requires cpatHex and cpatLogitModel in order to work properly.
         if (params.lncRNAdetection) {
-            GffRead(MultiBamExpressionQuantificationwf.out.gtf.map {it[1]})
+            GffRead(MultiBamExpressionQuantificationwf.out.gtf, referenceFasta[1])
             Cpat(GffRead.out.gtf, cpatHex, cpatLogitModel, referenceFasta, referenceFastaFai)
             Gff_Compare_lnc(MultiBamExpressionQuantificationwf.out.gtf, referenceFasta << referenceFastaFai[1], referenceGtfFile)
 
 
         }
         
-        //Reports are being merged together.
-        reports = Samplewf.out.reports.join(MultiBamExpressionQuantificationwf.out.report)
+         if(params.star) {
+            //Reports are being merged together.
+            reports = Samplewf.out.reports.join(MultiBamExpressionQuantificationwf.out.report)
 
-        //Report identification label is being removed since it can't be used in MultiQC.
-        reports.map{return it.subList(1, it.size()).flatten()}.set{reports}
+            //Report identification label is being removed since it can't be used in MultiQC.
+            reports.map{return it.subList(1, it.size()).flatten()}.set{reports}
 
-        //Run multiQC so that every report is shown in a single html page.
-        MultiQc(reports,[],[],[])
+            //Run multiQC so that every report is shown in a single html page.
+            MultiQc(reports,[],[],[])
 
-
+        } 
     
 }
 
