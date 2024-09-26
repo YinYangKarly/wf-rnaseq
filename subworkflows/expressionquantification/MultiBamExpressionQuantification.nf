@@ -1,6 +1,7 @@
 //All processes are loaded in.
 include {STRINGTIE_STRINGTIE as Stringtie} from "../../modules/nf-core/stringtie/stringtie/main.nf"
 include {GFFCOMPARE as Gff_Compare} from "../../modules/nf-core/gffcompare/main.nf"
+include {GFFCOMPARE as GFFCOMPARE_SAMPLE} from "../../modules/nf-core/gffcompare/main.nf"
 include {STRINGTIE_STRINGTIE as Stringtie_quan} from "../../modules/nf-core/stringtie/stringtie/main.nf"
 include {HTSEQ_COUNT as Htseq_Count} from "../../modules/nf-core/htseq/count/main.nf"
 include {COLLECT_COLUMN as Collect_Column_8} from "../../modules/local/collect_column/main.nf"
@@ -27,6 +28,8 @@ workflow MultiBamExpressionQuantificationwf {
 
         //Runs stringtie with the bam and referenceGtfFile. referenceGtfFile is only give if detectNovelTranscripts is false and lncRNAdetection is true.
         Stringtie(bam, referenceGtfFile[1])
+
+        GFFCOMPARE_SAMPLE(Stringtie.out.transcript_gtf, referenceFasta << referenceFastaFai[1], referenceGtfFile)
 
         //Combines all samples of the Stringtie output together into a single list, which is then used in Gff Compare
         Stringtie.out.transcript_gtf.map {instance ->
