@@ -1,11 +1,10 @@
 include { ARRIBA_ARRIBA as ARRIBA_RNABLOOM2 }                     from '../../modules/nf-core/arriba/arriba/main'
 include { STARLONG as STAR_FOR_RNABLOOM2 }                        from './modules/STARlong.nf'
-
+include { STAR_GENOMEGENERATE as Star_Genomegenerate}            from "../../modules/nf-core/star/genomegenerate/main.nf"
 
 workflow STARLONG_ARRIBA {
     take:
         fastarnabloom2
-        starindex_ref
         gtf
         fasta
         arriba_ref_blacklist
@@ -13,7 +12,10 @@ workflow STARLONG_ARRIBA {
         arriba_ref_protein_domains
     
     main:
-        STAR_FOR_RNABLOOM2( fastarnabloom2, starindex_ref, gtf, params.star_ignore_sjdbgtf, '', params.seq_center ?: '')
+    	if (params.star_index == null) {
+    	   Star_Genomegenerate(fasta[0,1], gtf)
+    	}
+        STAR_FOR_RNABLOOM2( fastarnabloom2, Star_Genomegenerate.out.index, gtf, params.star_ignore_sjdbgtf, '', params.seq_center ?: '')
         ARRIBA_RNABLOOM2 ( STAR_FOR_RNABLOOM2.out.bam_sorted, fasta, gtf, arriba_ref_blacklist, arriba_ref_known_fusions, [[],[]], [[],[]], arriba_ref_protein_domains )
        // versions = versions.mix(ARRIBA_RNABLOOM2.out.versions)
 
