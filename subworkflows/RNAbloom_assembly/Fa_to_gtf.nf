@@ -8,6 +8,7 @@ include { GFFCOMPARE as GFFCOMPARE_RNABLOOM2_2 }                from "../../modu
 include { GFFCOMPARE as GFFCOMPARE_RNABLOOM2_PER_SAMPLE }       from "../../modules/nf-core/gffcompare/main.nf"
 include { ADD_COVERAGE1 as ADD_COVERAGE1 }                      from "./modules/Add_coverage.nf"
 include { ADD_COVERAGE2 as ADD_COVERAGE2 }                      from "./modules/Add_cov.nf"
+include { GENERATE_PLOTS as GENERATE_PLOTS }                     from "./modules/Coverage_plots.nf"
 
 
 workflow FATOGTF {
@@ -27,6 +28,8 @@ workflow FATOGTF {
         GFFCOMPARE_RNABLOOM2_PER_SAMPLE(GFFREAD_RNABLOOM2.out.gtf, referenceFa << referenceFastaFai[1], referenceGtfFile)
         ADD_COVERAGE1(rnabloomtrans)
         ADD_COVERAGE2(ADD_COVERAGE1.out.covInfo, GFFCOMPARE_RNABLOOM2_PER_SAMPLE.out.tmap)
+        GENERATE_PLOTS(ADD_COVERAGE2.out.tmapNew)
+        
         GFFREAD_RNABLOOM2.out.gtf.map {instance ->
         gtf = instance[1]
         return [[id:"combined"], gtf]}.groupTuple().set{GFFread_output}
