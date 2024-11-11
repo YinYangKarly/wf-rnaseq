@@ -159,11 +159,7 @@
             "branch": "master",
             "git_sha": "e94623d0dd5015ccb07e941c8d3796bda449da95",
             "installed_by": ["modules"]
-          },
-          "untar": {
-            "branch": "master",
-            "git_sha": "e94623d0dd5015ccb07e941c8d3796bda449da95",
-            "installed_by": ["modules"]
+          }
           }
         }
       }
