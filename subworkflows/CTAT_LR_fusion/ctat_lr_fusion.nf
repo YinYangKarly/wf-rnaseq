@@ -1,6 +1,7 @@
 process CTAT_LR_FUSION {
     tag "$meta.id"
     label 'process_high'
+    fair true
 
    // container 'https://depot.galaxyproject.org/singularity/singularity:3.8.6'
     
