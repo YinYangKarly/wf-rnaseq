@@ -1,9 +1,6 @@
-//Channel
-  //.fromFilePairs(, flat: true) 
-  //.set { reads }
-
 process RNABLOOM2_ASSEMBLY {
   tag "$meta.id"
+  fair true
 
   container "https://depot.galaxyproject.org/singularity/rnabloom:2.0.1--hdfd78af_1" 
   
