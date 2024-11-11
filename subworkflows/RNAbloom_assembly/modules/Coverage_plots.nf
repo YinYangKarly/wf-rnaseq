@@ -1,5 +1,6 @@
 process GENERATE_PLOTS {
     tag "$meta.id"
+    fair true
 
     conda "r-stringr"
     conda "r-ggplot2"
@@ -17,7 +18,7 @@ process GENERATE_PLOTS {
     library(stringr)
     tmapFile <- read.csv("${tmapFileNew}", sep = "\t", header = TRUE)
 
-    novel <- tmapFile[tmapFile\$class_code == "u",]
+    novel <- tmapFile[c("i", "j", "m", "n", "o", "r", "u", "y") %in% tmapFile$\class_code,]
     split_cov_column_novel <-str_split_fixed(novel\$ref_match_len.NA, " ", 2)
     split_cov_column_novel_df <- data.frame(split_cov_column_novel)
     number_novel <- strsplit(split_cov_column_novel_df\$X2, "=")
