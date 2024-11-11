@@ -1,5 +1,6 @@
 process BAM2GFF {
     tag "$meta.id"
+    fair true
 
     container "https://depot.galaxyproject.org/singularity/spliced_bam2gff:1.3--he881be0_1"
 
