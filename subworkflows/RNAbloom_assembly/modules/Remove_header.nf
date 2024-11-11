@@ -1,5 +1,7 @@
 process REMOVE_PART_HEADER {
+    tag "$meta.id"
     label "process_single"
+    fair true
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/ubuntu:22.04' :
