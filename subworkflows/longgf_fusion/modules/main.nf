@@ -1,5 +1,6 @@
 process LONGGF_RUN {
     tag "$meta.id"
+    fair true
     
     container  "https://depot.galaxyproject.org/singularity/longgf:0.1.2--h84372a0_6"
     
