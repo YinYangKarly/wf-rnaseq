@@ -9,7 +9,7 @@ process RNABLOOM2_ASSEMBLY {
         tuple val(meta2), path(transcriptFasta)
 
   output:
-        tuple val(meta), path("${meta.id}_rnabloom2_assembly/rnabloom.transcripts.fa"), emit: fa
+        tuple val(meta), path("${meta.id}_rnabloom2_assembly/${meta.id}.transcripts.fa"), emit: fa
   
   script:
   def reads1 = [], reads2 = []
@@ -19,6 +19,6 @@ process RNABLOOM2_ASSEMBLY {
   def prefix = task.ext.prefix ?: "${meta.id}"
   
   """
-  rnabloom -ntcard ${args} -extend -chimera -o ${meta.id}_rnabloom2_assembly/ $input_reads -ref $transcriptFasta
+  rnabloom -ntcard ${args} -extend -chimera -n ${meta.id} -o ${meta.id}_rnabloom2_assembly/ $input_reads -ref $transcriptFasta
   """
 }
