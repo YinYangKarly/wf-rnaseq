@@ -67,6 +67,14 @@ conda install bioconda::nf-core
 nf-core modules list local
 ```
 
+## Setting up for the long-read part of the pipeline
+For the long-read part of the pipeline, the following things have to be installed or downloaded: R, singularity image of CTAT-LR Fusion and the genome library for CTAT-LR Fusion. 
+
+R can be installed in several ways, R can be installed by following the steps on this page: [The Comprehensive R Archive Network](https://cran.rstudio.com/). R can be also installed by using ```bash conda install conda-forge::r-base``` and ```bash conda install r::r-essentials```. 
+
+The singularity image of CTAT-LR Fusion is together with docker a recommended way of installing CTAT-LR Fusion. In the section ["Want to use Singularity?" of the CTAT-LR Fusion's GitHub page](https://github.com/TrinityCTAT/CTAT-LR-fusion/wiki/ctat_lr_fusion_docker_and_singularity#want-to-use-singularity) the link to the singularity image is shown where the singularity image can be downloaed and how to use it. It is importatn the the CTAT genome library is already installed and set up. The CTAT genome library can be downloaeded following the steps in the section of ["Obtaining and configuring the CTAT Genome Lib" of the CTAT-LR Fusion's GitHub page](https://github.com/TrinityCTAT/CTAT-LR-fusion/wiki#obtaining-ctat-lr-fusion-software).
+
+
 ## Setting export paths
 Exports paths have to be set to handle the temporary directory. If no export paths are set, errors can occur due to temporary directory space running out if it is set to the wrong folder <br/>
 The export paths can be set in the following way:
@@ -87,8 +95,8 @@ source ~/.bashrc
 Input can be defined in the parameters config file using filepaths. The exception being the reference genome files. <br/>
 
 The reference files work through a library system using the genome parameter, where the name of the genome will be looked up in the library. <br/>
-The library file is the igenomes config file. All genomes that will be used are described in there, including where the files are.<br/>
-It is preferred to have all the genomes in one common directory, as this will keep everything organized and easily maintained. <br/>
+The library file is the igenomes config file. All genomes that will be used are described in there, including where the files are. The files needed for fusion detection with Arriba will are described there as well. <br/>
+It is preferred to have all the genomes in one common directory, as this will keep everything organized and easily maintained. Also, the files required for Arriba fusion detection is preferred to be at the same plcace as the genomes in a separate folder called 'arriba'. <br/>
 The genome for use can be either filled in the parameter config file or in the command line within linux.<br/>
 
 There are a lot of parameters that can be filled in. Below is the list with parameters and what purpose each of them have.<br/><br/>
@@ -129,7 +137,14 @@ rrna_intervals               : Intervals file. Used for the collectrnaseqmetrics
 
 ### Mandatory Variables
 <hr>
-strandedness                 : Type of strand that is used. Can be either FR, RF or None. Default is RF. <br/><br/>
+strandedness                 : Type of strand that is used. Can be either FR, RF or None. Default is RF. 
+<hr>
+r_env                        : Path of the R environment. R has to be installe on to make this possible. It have to be given as input if long-read part of pipeline has to be run.
+<hr>
+sing_ctat                    : Path of the singularity image of CTAT-LR Fusion with the singularity image. It have to be given as input if long-read part of pipeline has to be run.
+<hr>
+genome_lib                   : Path of the CTAT-LR Fusion genome library. It have to be given as input if long-read part of pipeline has to be run.
+<br/><br/>
 <hr>
 
 ### Boolean Variables
@@ -152,7 +167,17 @@ gvcf                        : Boolean statement. If true, will run Combinevcf pr
 <hr>
 runStringtieQuantification  : Boolean statement. If true, it will run the stringtie quantification within the multibam expression quantification. Default is true. <br/>
 <hr>
-lncRNAdetection             : Boolean statement. If true, it will run the lncRNAdetection part of the pipeline. Default is false. <br/>
+lncRNAdetection             : Boolean statement. If true, it will run the lncRNAdetection part of the pipeline. Default is false.
+<hr>
+runRNABLoom2                : Boolean statement. If true, it will run the RNA-Bloom2 part of the pipeline where several sub-workflows will be run. Default is true.
+<hr>
+arriba                      : Boolean statement. If true, it will run Arriba fusion detection for the short reads part of the pipeline. Default is false.
+<hr>
+longgf                      : Boolean statement. If true, it will run the LongGF fusion detection for the long reads in the pipeline. Default is true,
+<hr>
+star                        : Boolean statement. If true, it will run the sampleworkflow for the short reads part of the pipeline. Default is false.
+<hr>
+stringtie                   : Boolean statement. If true, it will run the expression quantification for the shorr reads part of the pipeline. <br/>
 <hr><br/>
 
 ### Optional Variables
@@ -167,7 +192,9 @@ seq_center                  : Sequencing center, used for star align. Default is
 <hr>
 seq_platform                : Sequencing platform, used for star align. Default is illumina.
 <hr>
-scatter_size                : parameter for variant. Will be discontinued in near future. Default is 0. <br/>
+scatter_size                : Parameter for variant. Will be discontinued in near future. Default is 0. 
+<hr>
+jaffal_ref_dir              : Path of the JAFFAL pipelines and JAFFAL genome libraries. It is not recommended to run this part of the pipeline since it is not called anymomre in the pipeline. For the installation of the files required for JAFFAL, refer to the JAFFAL's GitHub page. <br/>
 <hr><br/>
 
 ### Environment Variables
