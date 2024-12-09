@@ -73,7 +73,7 @@ nf-core modules list local
 ## Setting up for the long-read part of the pipeline
 For the long-read part of the pipeline, the following things have to be installed or downloaded: R, singularity image of CTAT-LR Fusion and the genome library for CTAT-LR Fusion. 
 
-R can be installed in several ways, R can be installed by following the steps on this page: [The Comprehensive R Archive Network](https://cran.rstudio.com/). R can be also installed by using ```bash conda install conda-forge::r-base``` and ```bash conda install r::r-essentials```. 
+R can be installed in several ways, R can be installed by following the steps on this page: [The Comprehensive R Archive Network](https://cran.rstudio.com/). R can be also installed by using ```conda install conda-forge::r-base``` and ```conda install r::r-essentials```. 
 
 The singularity image of CTAT-LR Fusion is together with docker a recommended way of installing CTAT-LR Fusion. In the section ["Want to use Singularity?" of the CTAT-LR Fusion's GitHub page](https://github.com/TrinityCTAT/CTAT-LR-fusion/wiki/ctat_lr_fusion_docker_and_singularity#want-to-use-singularity) the link to the singularity image is shown where the singularity image can be downloaed and how to use it. It is importatn the the CTAT genome library is already installed and set up. The CTAT genome library can be downloaeded following the steps in the section of ["Obtaining and configuring the CTAT Genome Lib" of the CTAT-LR Fusion's GitHub page](https://github.com/TrinityCTAT/CTAT-LR-fusion/wiki#obtaining-ctat-lr-fusion-software).
 <br/><br/>
