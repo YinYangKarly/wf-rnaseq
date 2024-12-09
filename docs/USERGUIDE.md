@@ -148,6 +148,7 @@ sing_ctat                    : Path of the singularity image of CTAT-LR Fusion w
 genome_lib                   : Path of the CTAT-LR Fusion genome library. It have to be given as input if long-read part of pipeline has to be run.
 <hr>
 <br/><br/>
+
 ### Boolean Variables
 <hr>
 variantCalling               : Boolean statement that will activate the variantcalling part of the pipeline if true. Default is false. <br/>
