@@ -6,7 +6,8 @@ The purpose of the guide is to give a bit of insight regarding working with the 
 
 # Table of Contents
 1. [Layout](#layout)
-   - [Workflow Image](#workflow-image)
+   - [Workflow Image of the RNA-seq short-read pipeline](#workflow-image-of-the-rna-seq-short-read-pipeline)
+      - [Workflow Image of the long-read part of pipeline](#workflow-image-of-the-long-read-part-of-pipeline)
    - [Directory structure](#directory-structure)
 2. [Dependencies](#dependencies)
    - [Workflow dependencies](#workflow-dependencies)
@@ -24,7 +25,7 @@ The purpose of the guide is to give a bit of insight regarding working with the 
 
 # Layout
 
-## Workflow Image
+## Workflow Image of the RNA-seq short-read pipeline
 ![Workflow Image](https://github.com/lumc-sasc/wf-rnaseq/blob/main/docs/images/Workflow_Diagram.png)
 The workflow image shows all the processes that exist in the current model of the pipeline. <br/>
 Each color describes a different part of the pipeline and each shape describes either a file or a process. <br/>
@@ -43,7 +44,16 @@ LncRNAseq falls under the dark green part of the workflow image. <br/>
 Expression quantification subworkflow falls under the dark red and grey part of the workflow image <br/><br/><br/>
 <hr><br/><br/>
 
+### Workflow Image of the long-read part of pipeline
+Below is the long reads fusion and novel transcript detection pipeline. This pipeline used short reads as input.
+![Long-read-pipeline](https://github.com/YinYangKarly/wf-rnaseq/blob/develop/docs/images/Workflow_multiple_tools_v34.png)
 
+In the yellow part of the pipeline the following subworkflows are present: Fastqc (mentioned in section above in details), RNA-Bloom2 assembly, fasta file to gtf file conversion (Fa to gtf). Extract the coverage information is seperated in modules used in this part of the pipeline
+
+In the blue part of the pipeline the following subworkflows are present: Fasta to fastq (Fa to fq), CTAT-LR Fusion, LongGF, and STARlong+Arriba. Remove part of the header" is module used in this part of the pipeline.
+
+The purple part of the pipeline contains a module to make a normalized coverage distribution plot for each sample.
+<hr><br/><br/>
 ## Directory structure.
 A certain structure should be followed when addding processes, workflows and subworkflows. <br/>
 A workflow should be added to the workflows directory, <br/>
