@@ -45,9 +45,9 @@ Expression quantification subworkflow falls under the dark red and grey part of 
 <hr><br/><br/>
 
 ### Workflow Image of the long-read part of pipeline
-Below is the long reads fusion and novel transcript detection pipeline. This pipeline used short reads as input.
-![Long-read-pipeline](https://github.com/YinYangKarly/wf-rnaseq/blob/develop/docs/images/Workflow_multiple_tools_v34.png)
+![Long read pipeline](https://github.com/YinYangKarly/wf-rnaseq/blob/develop/docs/images/Workflow_multiple_tools_v34.png)
 
+The long reads fusion and novel transcript detection pipeline. This pipeline used short reads as input.
 In the yellow part of the pipeline the following subworkflows are present: Fastqc (mentioned in section above in details), RNA-Bloom2 assembly, fasta file to gtf file conversion (Fa to gtf). Extract the coverage information is seperated in modules used in this part of the pipeline
 
 In the blue part of the pipeline the following subworkflows are present: Fasta to fastq (Fa to fq), CTAT-LR Fusion, LongGF, and STARlong+Arriba. Remove part of the header" is module used in this part of the pipeline.
