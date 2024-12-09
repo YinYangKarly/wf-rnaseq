@@ -7,6 +7,9 @@ RNA-seq is a nextflow pipeline that does analysis on transcriptomic sequencing d
 1. [Installation](#installation)
    - [Dependencies Installation](#dependencies-installation)
    - [Pipeline Installation](#pipeline-installation)
+   - [Module Installation](#module-installation)
+   - [Setting up for the long-read part of the pipeline](#setting-up-for-the-long-read-part-of-the-pipeline)
+   - [Setting export paths](#setting-export-paths)
 3. [Usage](#usage)
    - [Input and configurations](#input-and-configurations)
      - [Genome Parameters](#genome-parameters)
@@ -66,15 +69,14 @@ conda activate nextflow
 conda install bioconda::nf-core
 nf-core modules list local
 ```
-
+<br/><br/>
 ## Setting up for the long-read part of the pipeline
 For the long-read part of the pipeline, the following things have to be installed or downloaded: R, singularity image of CTAT-LR Fusion and the genome library for CTAT-LR Fusion. 
 
 R can be installed in several ways, R can be installed by following the steps on this page: [The Comprehensive R Archive Network](https://cran.rstudio.com/). R can be also installed by using ```bash conda install conda-forge::r-base``` and ```bash conda install r::r-essentials```. 
 
 The singularity image of CTAT-LR Fusion is together with docker a recommended way of installing CTAT-LR Fusion. In the section ["Want to use Singularity?" of the CTAT-LR Fusion's GitHub page](https://github.com/TrinityCTAT/CTAT-LR-fusion/wiki/ctat_lr_fusion_docker_and_singularity#want-to-use-singularity) the link to the singularity image is shown where the singularity image can be downloaed and how to use it. It is importatn the the CTAT genome library is already installed and set up. The CTAT genome library can be downloaeded following the steps in the section of ["Obtaining and configuring the CTAT Genome Lib" of the CTAT-LR Fusion's GitHub page](https://github.com/TrinityCTAT/CTAT-LR-fusion/wiki#obtaining-ctat-lr-fusion-software).
-
-
+<br/><br/>
 ## Setting export paths
 Exports paths have to be set to handle the temporary directory. If no export paths are set, errors can occur due to temporary directory space running out if it is set to the wrong folder <br/>
 The export paths can be set in the following way:
@@ -95,7 +97,7 @@ source ~/.bashrc
 Input can be defined in the parameters config file using filepaths. The exception being the reference genome files. <br/>
 
 The reference files work through a library system using the genome parameter, where the name of the genome will be looked up in the library. <br/>
-The library file is the igenomes config file. All genomes that will be used are described in there, including where the files are. The files needed for fusion detection with Arriba will are described there as well. <br/>
+The library file is the igenomes config file. All genomes that will be used are described in there, including where the files are. The files needed for fusion detection with Arriba are described there as well. <br/>
 It is preferred to have all the genomes in one common directory, as this will keep everything organized and easily maintained. Also, the files required for Arriba fusion detection is preferred to be at the same plcace as the genomes in a separate folder called 'arriba'. <br/>
 The genome for use can be either filled in the parameter config file or in the command line within linux.<br/>
 
@@ -144,9 +146,8 @@ r_env                        : Path of the R environment. R has to be installe o
 sing_ctat                    : Path of the singularity image of CTAT-LR Fusion with the singularity image. It have to be given as input if long-read part of pipeline has to be run.
 <hr>
 genome_lib                   : Path of the CTAT-LR Fusion genome library. It have to be given as input if long-read part of pipeline has to be run.
-<br/><br/>
 <hr>
-
+<br/><br/>
 ### Boolean Variables
 <hr>
 variantCalling               : Boolean statement that will activate the variantcalling part of the pipeline if true. Default is false. <br/>
