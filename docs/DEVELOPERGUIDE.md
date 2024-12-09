@@ -53,7 +53,7 @@ In the yellow part of the pipeline the following subworkflows are present: Fastq
 In the blue part of the pipeline the following subworkflows are present: Fasta to fastq (Fa to fq), CTAT-LR Fusion, LongGF, and STARlong+Arriba. Remove part of the header" is module used in this part of the pipeline.
 
 The purple part of the pipeline contains a module to make a normalized coverage distribution plot for each sample.
-<hr><br/><br/>
+<hr>
 
 ## Directory structure.
 A certain structure should be followed when addding processes, workflows and subworkflows. <br/>
