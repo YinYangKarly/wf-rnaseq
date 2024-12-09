@@ -54,6 +54,7 @@ In the blue part of the pipeline the following subworkflows are present: Fasta t
 
 The purple part of the pipeline contains a module to make a normalized coverage distribution plot for each sample.
 <hr><br/><br/>
+
 ## Directory structure.
 A certain structure should be followed when addding processes, workflows and subworkflows. <br/>
 A workflow should be added to the workflows directory, <br/>
