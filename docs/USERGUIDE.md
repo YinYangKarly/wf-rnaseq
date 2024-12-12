@@ -256,7 +256,7 @@ In this case singularity is enabled with automount. The cache directory of where
 ### Standard execution
 if the required files and the dependencies are installed, and if the parameters have been set, you can run the pipeline with the following command.
 ```bash
-nextflow run RNA-seq.nf -entry RNA_seq_pipeline --genome 'Nextflow_test_human'
+nextflow run main.nf -entry RNA_seq_pipeline --genome 'Nextflow_test_human'
 ```
 <hr/><br/>
 
@@ -264,7 +264,7 @@ nextflow run RNA-seq.nf -entry RNA_seq_pipeline --genome 'Nextflow_test_human'
 Adding additional parameters can be done in two ways. <br/>
 The first way is to add arguments in the command line. See below for following example with adapters and runStringtieQuantification:
 ```bash
-nextflow run RNA-seq.nf -entry RNA_seq_pipeline --genome 'Nextflow_test_human' --adapterForward AGATCGGAAGAG --adapterReverse AGATCGGAAGAG --runStringtieQuantification true 
+nextflow run main.nf -entry RNA_seq_pipeline --genome 'Nextflow_test_human' --adapterForward AGATCGGAAGAG --adapterReverse AGATCGGAAGAG --runStringtieQuantification true 
 ```
 <br/>
 
