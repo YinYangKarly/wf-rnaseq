@@ -10,7 +10,7 @@ include { ADD_COVERAGE1 as ADD_COVERAGE1 }                      from "./modules/
 include { ADD_COVERAGE2 as ADD_COVERAGE2 }                      from "./modules/Add_cov.nf"
 include { GENERATE_PLOTS as GENERATE_PLOTS }                     from "./modules/Coverage_plots.nf"
 
-
+//Start of the workflow
 workflow FATOGTF {
     //Input are given for the pipeline
     take:
