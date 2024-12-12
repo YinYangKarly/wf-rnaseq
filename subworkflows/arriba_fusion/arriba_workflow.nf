@@ -1,19 +1,23 @@
+//Import the nf-core arriba module
 include { ARRIBA_ARRIBA as ARRIBA }                     from '../../modules/nf-core/arriba/arriba/main'
 
+//Start of the workflow
 workflow ARRIBA_WORKFLOW {
+    //Input of the workflow are given
     take:
         reads
         ch_gtf
         ch_fasta
         ch_bam
-        //ch_starindex_ref 
         ch_arriba_ref_blacklist
         ch_arriba_ref_known_fusions
         ch_arriba_ref_protein_domains
 
+    //Main part of the workflow.
     main:
         ch_versions = Channel.empty()
    
+        //Runs arriba if params.arriba is true.
         if (params.arriba) {
             ARRIBA ( ch_bam, ch_fasta, ch_gtf, ch_arriba_ref_blacklist, ch_arriba_ref_known_fusions, [[],[]], [[],[]], ch_arriba_ref_protein_domains )
             ch_versions = ch_versions.mix(ARRIBA.out.versions)
@@ -28,6 +32,7 @@ workflow ARRIBA_WORKFLOW {
             ch_arriba_fusion_fail   = ch_dummy_file
         }
 
+    //Emit the fusion detection results (both kept and discarded files)
     emit:
         fusions         = ch_arriba_fusions
         fusions_fail    = ch_arriba_fusion_fail

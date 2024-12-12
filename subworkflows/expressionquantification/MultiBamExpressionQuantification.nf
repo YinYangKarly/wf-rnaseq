@@ -23,7 +23,7 @@ workflow MultiBamExpressionQuantificationwf {
     //It will check if the referenceGTF is present. If it is present, detectNovelTranscripts will be set to false, else it will be set to true.
     detectNovelTranscripts = file(params.genomes[ params.genome ][ 'referenceGTF' ]).exists() ? false : true
     
-    //checks if dtectnoveltranscripts is true or if the lncRNAdetection is true. If either is true, it will run stringtie with Gff_Compare
+    //Checks if dtectnoveltranscripts is true or if the lncRNAdetection is true. If either is true, it will run stringtie with Gff_Compare
     if (detectNovelTranscripts || params.lncRNAdetection) {
 
         //Runs stringtie with the bam and referenceGtfFile. referenceGtfFile is only give if detectNovelTranscripts is false and lncRNAdetection is true.
@@ -36,7 +36,7 @@ workflow MultiBamExpressionQuantificationwf {
         gtf = instance[1]
         return [[id:"combined"], gtf]}.groupTuple().set{Stringtie_output}
 
-        //runs the Gff_Compare with grouped output of stringtie, referencegenome, and referenceGtfFile if present.
+        //Runs the Gff_Compare with grouped output of stringtie, referencegenome, and referenceGtfFile if present.
         Gff_Compare(Stringtie_output, referenceFasta << referenceFastaFai[1], referenceGtfFile)
 
     }
@@ -93,13 +93,13 @@ workflow MultiBamExpressionQuantificationwf {
             reports = instance
             return [[id:identification], reports]}.set{Collect_column_report}
     
-    //combining the reports from Htseq_count and Collumn collect
+    //Combining the reports from Htseq_count and Collumn collect
     reports = Htseq_count_report.join(Collect_column_report)
 
-    //reformat the reportchannel so the files are in a single list.
+    //Reformat the reportchannel so the files are in a single list.
     reports.map {return [it[0], it[1,-1].flatten()]}.set{reports}
 
-    //emitting the output of the workflow
+    //Emitting the output of the workflow
     emit:
     gtf = gtf_with_meta
     report = reports

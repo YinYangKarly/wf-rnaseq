@@ -23,7 +23,7 @@ workflow QCwf {
 
     
 
-    //if runAdapterClipping is true, it will run cutadapt and fastqc of cutadapt.
+    //If runAdapterClipping is true, it will run cutadapt and fastqc of cutadapt.
     if (runAdapterClipping) {
         //Trims reads based on the adapters or contaminations.
         Cutadapt(read_list)
@@ -33,16 +33,15 @@ workflow QCwf {
     
     }
 
-    //combines all the reports from fastqc and if adapter is run cutadapt aswell.
+    //Combines all the reports from fastqc and if adapter is run cutadapt aswell.
     reports = runAdapterClipping ?
         read_fastqc.out.html.join(read_fastqc.out.zip).join(cutadapt_fastqc.out.html).join(cutadapt_fastqc.out.zip).join(Cutadapt.out.log) :
         read_fastqc.out.html.join(read_fastqc.out.zip)
         
 
-    //emits the output. 
+    //Emits the output. 
     emit:
     reads = runAdapterClipping ? Cutadapt.out.reads : read_list
-
     reports = reports
 }
 

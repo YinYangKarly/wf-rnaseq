@@ -1,3 +1,4 @@
+//Self-made module of CTAT-LR Fusion tool
 process CTAT_LR_FUSION {
     tag "$meta.id"
     label 'process_high'
@@ -10,8 +11,6 @@ process CTAT_LR_FUSION {
    
     output:
     tuple val(meta), path("ctat_LR_fusion_outdir/")
-    //${params.outdir}/${meta.id}_ctat_LR_fusion/
-//    path  "versions.yml"                      
 
     script:
     """

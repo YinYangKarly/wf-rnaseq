@@ -12,13 +12,13 @@ include {UMITOOLS_DEDUP as Dedup}                               from "../modules
 include {PICARD_MARKDUPLICATES as Picard_Markduplicates_dedup}  from "../modules/nf-core/picard/markduplicates/main.nf"
 
 
-//defines splicesites
+//Defines splicesites
 splicesites = file("$baseDir/${params.splicesites}").exists() ? ${params.splicesites} : [[id: "refgtf"],[]]
 
-//defines the star index if it is present, else it is set to null.
+//Defines the star index if it is present, else it is set to null.
 star_index = file("$baseDir/${params.starIndex}/SAindex").exists() ? ["${params.starIndex}/SAindex"] : null
 
-//defines the hisat 2 index and seperates all index files from each other and creating seperate instances.
+//Defines the hisat 2 index and seperates all index files from each other and creating seperate instances.
 hisat2_index = Channel.fromList([file("$baseDir/inputfiles/${params.hisat2}/*.ht2")]).map {instance ->
             return [[id: "hisat"], instance]}.set {hisat2_indexChannel}
 

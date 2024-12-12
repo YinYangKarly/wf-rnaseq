@@ -8,7 +8,7 @@ include {BCFTOOLS_STATS as Bcftools_Stats} from "../../modules/nf-core/bcftools/
 
 
 
-//files and/or variables used for the subworkflow
+//Files and/or variables used for the subworkflow
     Dragstr_model = file("./inputfiles/${params.Dragstr_model}").exists() ? Channel.value(file("./inputfiles/${params.Dragstr_model}")) : Channel.value([]).toList()
 
     Bcfstats_regions = file("./inputfiles/${params.Bcfstats_regions}").exists() ?
@@ -90,7 +90,7 @@ workflow SingleSampleCallingwf {
         Picard_Mergevcfs(VCFs)
     }
     
-    //creating merged vcf or gvcf function that can be used in bfctools stats.
+    //Creating merged vcf or gvcf function that can be used in bfctools stats.
     mergedVcf = params.mergeVcf && !params.gvcf && xNonParRegions != [] && yNonParRegions != [] ? Picard_Mergevcfs.out.vcf :
         params.mergeVcf && params.gvcf && xNonParRegions != [] && yNonParRegions != [] ? Gatk4_Combinegvcfs.out.vcf.join(Gatk4_Combinegvcfs.out.tbi) :
         Gatk4_Haplotypecaller.out.vcf.join(Gatk4_Haplotypecaller.out.tbi)
