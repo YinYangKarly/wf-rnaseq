@@ -28,10 +28,9 @@ include {GFFCOMPARE as Gff_Compare_lnc}             from "../modules/nf-core/gff
 include {ARRIBA_WORKFLOW as Arribawf}               from "../subworkflows/arriba_fusion/arriba_workflow.nf" 
 include {LONG_GF as LongGFwf}                       from "../subworkflows/longgf_fusion/LongGF_workflow.nf"
 
-// This part include RNABloom2 assembly and Fasta to Gtf file coversion.
+// This part include RNABloom2 assembly and Fasta to Gtf file coversion. Also the fusion detection happens in this part.
 include {RNABLOOM2 as Rnabloom2wf}                  from "../subworkflows/RNAbloom_assembly/RNA_Bloom2_workflow.nf"
 include {FATOGTF as Fatogtfwf}                      from "../subworkflows/RNAbloom_assembly/Fa_to_gtf.nf"   
-include { GFFCOMPARE as GFFCOMPARECOMP}             from "../modules/nf-core/gffcompare/main.nf"
 include {FATOFQ as Fatofqwf}                        from "../subworkflows/RNAbloom_assembly/Fa_to_fq.nf"   
 include { RNA_FUSIONS_JAFFAL as Jaffal }            from "../subworkflows/rna_fusions_jaffal.nf"
 include {STARLONG_ARRIBA as Starlong_arribawf }     from "../subworkflows/RNAbloom_assembly/STARlong_arriba.nf"
@@ -47,7 +46,7 @@ workflow RNA_seq {
         fastq_grouped_list = File_Check()
         
 
-        /*defines genomeconfig. It will look in the igenomes config file and the params config file. Within the params.config file it will look for
+        /*Defines genomeconfig. It will look in the igenomes config file and the params config file. Within the params.config file it will look for
         the genomes parameter. It is the base directory of where all the genomes are located. It will then check the genome parameter to see which genome is used.
         It will then look in the igenomes config file to see in what subdirectory the files are present and grabs the files if it exists.
         */
@@ -58,22 +57,22 @@ workflow RNA_seq {
         referenceGtfFile                    = file(params.genomes[ params.genome ][ 'referenceGTF' ]).exists() ? [[id: "Genome"], file(params.genomes[ params.genome ][ 'referenceGTF' ])] : [[id: "Genome"], []]
 		transcriptFasta                     = file(params.genomes[ params.genome ][ 'fastaTranscript' ]).exists() ? [[id: "Genome"], file(params.genomes[ params.genome ][ 'fastaTranscript' ])] : [[id: "Genome"], []]
 
-		 //define input needed for Arriba fusion
+		//Defines input needed for Arriba fusion
         blakclist                           = [[id: "Genome"], file(params.genomes[ params.genome ][ 'arriba_ref_blacklist' ], checkIfExists: true)]
         cytobands                           = [[id: "Genome"], file(params.genomes[ params.genome ][ 'arriba_ref_cytobands' ], checkIfExists: true)]
         knownFus                            = [[id: "Genome"], file(params.genomes[ params.genome ][ 'arriba_ref_known_fusions' ], checkIfExists: true)]
         protdom                             = [[id: "Genome"], file(params.genomes[ params.genome ][ 'arriba_ref_protein_domains' ], checkIfExists: true)]
 
-        //defines regions. Optional files that are only used in the variantcalling part of the workflow.
+        //Defines regions. Optional files that are only used in the variantcalling part of the workflow.
         variantCallingRegions               = file("$baseDir/$params.variantCallingRegions").exists() ? [[id: "Region"], file(params.variantCallingRegions)] : []
         xNonParRegions                      = file("$baseDir/$params.xNonParRegions").exists()        ? [[id: "Region"], file(params.xNonParRegions)] : []
         yNonParRegions                      = file("$baseDir/$params.yNonParRegions").exists()        ? [[id: "Region"], file(params.yNonParRegions)] : []
 
-        //defines VCF. Optional files that are only used in the variantcalling part of the workflow.
+        //Defines VCF. Optional files that are only used in the variantcalling part of the workflow.
         dbsnpVCF                            = file("$baseDir/$params.dbsnpVCF").exists()              ? [[id: "Vcf"], file(params.dbsnpVCF)]          : [[id: "empty"],[]]
         dbsnpVCFIndex                       = file("$baseDir/$params.dbsnpVCFIndex").exists()         ? [[id: "Vcf"], file(params.dbsnpVCFIndex)]     : [[id: "empty"],[]]
 
-        //defines cpat. Needed in order for lncRNAdetection part of the workflow to work properly.
+        //Defines cpat. Needed in order for lncRNAdetection part of the workflow to work properly.
         cpatLogitModel                      = file("$baseDir/$params.cpatLogitModel").exists()        ? [[id: "cpat"], params.cpatLogitModel]   : []
         cpatHex                             = file("$baseDir/$params.cpatHex").exists()               ? [[id: "cpat"], params.cpatHex]          : []
 
@@ -81,7 +80,7 @@ workflow RNA_seq {
 
         QCwf(fastq_grouped_list)
 
-        //runs the sampleworkflow if params.star is true.
+        //Runs the sampleworkflow if params.star is true.
         if(params.star) {
             Samplewf(fastq_grouped_list, referenceFasta, referenceFastaFai, referenceFastaDict, referenceGtfFile , refflatFile)
         }
@@ -118,7 +117,7 @@ workflow RNA_seq {
 
         }
         
-        //RNA-Bloom2 assembly, if that is true it will run
+        //RNA-Bloom2 assembly, if that is true it will run the RNA-Bloom2 assembly, Fa to gtf, Fa to fq, CTAT-LR Fusion and STARlong+Arriba sub-workflows.
         if (params.runRNABLoom2) {
             Rnabloom2wf(QCwf.out.reads, transcriptFasta, referenceFasta)
             Fatogtfwf(Rnabloom2wf.out.fastaRNABloom, referenceFasta, referenceFastaFai, referenceGtfFile)
@@ -146,7 +145,8 @@ workflow RNA_seq {
 
         }
         
-         if(params.star) {
+        //Runs this part is params.star is true.
+        if(params.star) {
             //Reports are being merged together.
             reports = Samplewf.out.reports.join(MultiBamExpressionQuantificationwf.out.report)
 
